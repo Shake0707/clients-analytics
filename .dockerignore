@@ -1,0 +1,24 @@
+# Зависимости и артефакты сборки (ставятся/собираются внутри образа)
+**/node_modules
+**/dist
+**/build
+**/.turbo
+apps/api/src/generated
+apps/api/generated
+**/*.tsbuildinfo
+
+# Секреты и локальное окружение (env передаётся через docker-compose)
+.env
+.env.*
+!.env.example
+
+# VCS / инструменты / временное
+.git
+.gitignore
+.claude
+**/*.log
+coverage
+.nyc_output
+
+# Тяжёлый design-бандл, не нужен для сборки
+apps/client/design

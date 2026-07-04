@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────
+# Полный стек в контейнерах: Postgres + API + Client (nginx).
+#   docker compose up -d --build
+#   → приложение: http://localhost:8080  (API проксируется через nginx)
+#
+# Значения секретов берутся из корневого .env (BOT_TOKEN, ADMIN_TELEGRAM_IDS…).
+# Для локального dev БД используйте docker/docker-compose.yml (порт 5012).
+# ─────────────────────────────────────────────────────────────
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gigant
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d gigant']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/gigant?schema=public
+      NODE_ENV: production
+      PORT: 3000
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
+      BOT_TOKEN: ${BOT_TOKEN:-}
+      ADMIN_TELEGRAM_IDS: ${ADMIN_TELEGRAM_IDS:-}
+      AUTH_INITDATA_TTL: ${AUTH_INITDATA_TTL:-86400}
+      AUTH_DEV_BYPASS: ${AUTH_DEV_BYPASS:-0}
+      SHOP_TIMEZONE: ${SHOP_TIMEZONE:-Asia/Tashkent}
+      WEEK_START: ${WEEK_START:-monday}
+      DEFAULT_PERIOD: ${DEFAULT_PERIOD:-month}
+      TOP_LIMIT: ${TOP_LIMIT:-5}
+      CURRENCY: ${CURRENCY:-UZS}
+    depends_on:
+      db:
+        condition: service_healthy
+    # Порт наружу не публикуем — client (nginx) ходит внутри сети.
+    # Для прямой отладки раскомментируйте:
+    # ports:
+    #   - "3000:3000"
+
+  client:
+    build:
+      context: .
+      dockerfile: apps/client/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '8080:80'
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

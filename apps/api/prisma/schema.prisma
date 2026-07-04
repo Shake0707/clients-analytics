@@ -1,0 +1,56 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Client {
+  id          Int         @id @default(autoincrement())
+  name        String
+  surname     String?
+  telNumber   String      @unique // нормализованный формат +998XXXXXXXXX
+  purchaseds  Purchased[]
+  totalAmount Decimal     @default(0) @db.Decimal(12, 2) // сумма фактических цен продаж, §12-B
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Purchased {
+  id           Int             @id @default(autoincrement())
+  clientId     Int
+  client       Client          @relation(fields: [clientId], references: [id])
+  items        PurchasedItem[]
+  price        Decimal         @db.Decimal(12, 2) // «за сколько продал», 0 ≤ price ≤ Σ(товары)
+  purchaseDate DateTime        @default(now()) // ось статистики, редактируемая, §12-A
+  createdAt    DateTime        @default(now()) // когда внесли (аудит)
+  updatedAt    DateTime        @updatedAt
+
+  @@index([clientId])
+  @@index([purchaseDate])
+}
+
+model Product {
+  id             Int             @id @default(autoincrement())
+  name           String          @unique
+  price          Decimal         @db.Decimal(12, 2)
+  isActive       Boolean         @default(true) // soft-delete, §12-E
+  purchasedItems PurchasedItem[]
+}
+
+model PurchasedItem {
+  id          Int       @id @default(autoincrement())
+  purchasedId Int
+  productId   Int
+  quantity    Int // сколько штук взял клиент (не про склад)
+  price       Decimal   @db.Decimal(12, 2) // снимок цены за штуку на момент продажи
+  purchased   Purchased @relation(fields: [purchasedId], references: [id], onDelete: Cascade)
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@index([purchasedId])
+  @@index([productId])
+}

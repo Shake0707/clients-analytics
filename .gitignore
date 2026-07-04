@@ -1,0 +1,47 @@
+# ─── Dependencies ───
+node_modules/
+.pnpm-store/
+
+# ─── Build output ───
+dist/
+build/
+**/dist/
+**/build/
+*.tsbuildinfo
+
+# ─── Turborepo ───
+.turbo/
+
+# ─── Prisma (generated client) ───
+apps/api/src/generated/
+apps/api/generated/
+
+# ─── Env / secrets ───
+.env
+.env.*
+!.env.example
+
+# ─── Logs ───
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Test / coverage ───
+coverage/
+.nyc_output/
+
+# ─── OS / editors ───
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ─── Vite ───
+apps/client/dist/
+*.local
+
+**/design/
+.claude/
