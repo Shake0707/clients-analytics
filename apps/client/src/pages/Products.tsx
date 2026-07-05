@@ -5,11 +5,12 @@ import { usePeriod } from '../lib/period-context';
 import { useProducts, useTopProducts } from '../hooks';
 import { compactStr, grp, grpStr, num, somStr } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { Card, Empty, Loading, PageTitle, Screen, SearchInput } from '../ui/common';
+import { Card, Empty, PageTitle, Screen, SearchInput } from '../ui/common';
 import { PeriodSelector } from '../ui/PeriodSelector';
 import { Segmented } from '../ui/Segmented';
 import { Chart } from '../ui/Chart';
 import { ListRow, ShowMore } from '../ui/ListRow';
+import { SkelChart, SkelRows } from '../ui/Skeleton';
 
 const sortItems = [
   { key: 'revenue' as const, label: uz.sortRevenue },
@@ -38,14 +39,14 @@ export function Products() {
             <Segmented items={sortItems} value={sort} onChange={setSort} small />
           </div>
         </div>
-        {top.data ? <Chart points={top.data.bars} type="bar" height={150} /> : <Loading />}
+        {top.data ? <Chart points={top.data.bars} type="bar" height={150} /> : <SkelChart height={150} />}
       </Card>
 
       <SearchInput value={search} onChange={(v) => { setSearch(v); setLimit(8); }} placeholder={uz.searchProduct} />
 
       <Card style={{ padding: '2px 16px 8px' }}>
         {!list.data ? (
-          <Loading />
+          <SkelRows rows={6} />
         ) : list.data.items.length === 0 ? (
           <Empty>{uz.productNotFound}</Empty>
         ) : (

@@ -5,7 +5,8 @@ import { useTheme } from '../lib/theme-context';
 import { useDashboard } from '../hooks';
 import { compactStr, somStr } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { Card, Loading, Screen } from '../ui/common';
+import { Card, Screen } from '../ui/common';
+import { HomeSkeleton } from '../ui/Skeleton';
 import { PeriodSelector } from '../ui/PeriodSelector';
 import { Segmented } from '../ui/Segmented';
 import { Chart } from '../ui/Chart';
@@ -78,7 +79,7 @@ export function Home() {
       <PeriodSelector />
 
       {isLoading || !data ? (
-        <Loading />
+        <HomeSkeleton />
       ) : (
         <>
           <div

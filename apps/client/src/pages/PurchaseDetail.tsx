@@ -2,8 +2,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDeleteSale, usePurchase } from '../hooks';
 import { grpStr, num, somStr } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { BackButton, Card, Loading, Screen } from '../ui/common';
+import { BackButton, Card, Screen } from '../ui/common';
 import { EditDeleteRow } from '../ui/EditDeleteRow';
+import { SaleDetailSkeleton } from '../ui/Skeleton';
 import { useConfirm } from '../ui/confirm-context';
 
 export function PurchaseDetail() {
@@ -30,7 +31,7 @@ export function PurchaseDetail() {
     return (
       <Screen>
         <BackButton />
-        <Loading />
+        <SaleDetailSkeleton />
       </Screen>
     );
   }

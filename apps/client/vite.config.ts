@@ -9,15 +9,11 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] })
   ],
   server: {
-    port: 5173,
-    // Слушать все интерфейсы — чтобы ngrok мог достучаться.
-    host: true,
-    // Vite 8 блокирует незнакомый Host (ngrok-домен) → 403. Разрешаем туннели.
     allowedHosts: true,
     proxy: {
       // Фронт публикуется через ngrok; API проксируется тем же origin.
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:6700',
         changeOrigin: true,
       },
     },

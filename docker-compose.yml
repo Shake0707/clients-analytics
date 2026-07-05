@@ -1,10 +1,11 @@
 # ─────────────────────────────────────────────────────────────
 # Полный стек в контейнерах: Postgres + API + Client (nginx).
 #   docker compose up -d --build
-#   → приложение: http://localhost:8080  (API проксируется через nginx)
+#   → приложение: http://localhost:6703  (API проксируется через nginx)
 #
 # Значения секретов берутся из корневого .env (BOT_TOKEN, ADMIN_TELEGRAM_IDS…).
-# Для локального dev БД используйте docker/docker-compose.yml (порт 5012).
+# Порты вынесены в диапазон 6700+ (на сервере остальные заняты).
+# Для локального dev поднимите только БД:  docker compose up -d db  (host 6702).
 # ─────────────────────────────────────────────────────────────
 services:
   db:
@@ -14,6 +15,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: gigant
+    # Только loopback — БД не должна быть доступна извне сервера.
+    # Локальный dev (pnpm dev) ходит на localhost:6702, это тот же 127.0.0.1.
+    ports:
+      - '127.0.0.1:6702:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -30,8 +35,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/gigant?schema=public
       NODE_ENV: production
-      PORT: 3000
-      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:8080}
+      PORT: 6700
+      CLIENT_ORIGIN: ${CLIENT_ORIGIN:-http://localhost:6703}
       BOT_TOKEN: ${BOT_TOKEN:-}
       ADMIN_TELEGRAM_IDS: ${ADMIN_TELEGRAM_IDS:-}
       AUTH_INITDATA_TTL: ${AUTH_INITDATA_TTL:-86400}
@@ -47,7 +52,7 @@ services:
     # Порт наружу не публикуем — client (nginx) ходит внутри сети.
     # Для прямой отладки раскомментируйте:
     # ports:
-    #   - "3000:3000"
+    #   - "6700:6700"
 
   client:
     build:
@@ -55,7 +60,7 @@ services:
       dockerfile: apps/client/Dockerfile
     restart: unless-stopped
     ports:
-      - '8080:80'
+      - '6703:80'
     depends_on:
       - api
 

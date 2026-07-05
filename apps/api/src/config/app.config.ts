@@ -11,7 +11,7 @@ export const appConfig = registerAs('app', () => {
     .filter((n) => Number.isFinite(n));
 
   return {
-    clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+    clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:6701',
     tz: process.env.SHOP_TIMEZONE ?? 'Asia/Tashkent',
     weekStart: process.env.WEEK_START ?? 'monday',
     defaultPeriod: (process.env.DEFAULT_PERIOD as PeriodPreset) ?? 'month',

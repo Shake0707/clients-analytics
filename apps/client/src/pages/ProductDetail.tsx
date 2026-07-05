@@ -3,10 +3,11 @@ import { usePeriod } from '../lib/period-context';
 import { useDeleteProduct, useProduct } from '../hooks';
 import { grpStr, somStr } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { BackButton, Card, Empty, Loading, Screen } from '../ui/common';
+import { BackButton, Card, Empty, Screen } from '../ui/common';
 import { StatGrid } from '../ui/StatGrid';
 import { ListRow } from '../ui/ListRow';
 import { EditDeleteRow } from '../ui/EditDeleteRow';
+import { DetailSkeleton } from '../ui/Skeleton';
 import { useConfirm } from '../ui/confirm-context';
 
 export function ProductDetail() {
@@ -34,7 +35,7 @@ export function ProductDetail() {
     return (
       <Screen>
         <BackButton />
-        <Loading />
+        <DetailSkeleton />
       </Screen>
     );
   }

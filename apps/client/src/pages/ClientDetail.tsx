@@ -4,11 +4,12 @@ import { useClient, useDeleteClient } from '../hooks';
 import { ApiError } from '../api';
 import { somStr } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { BackButton, Card, Empty, Loading, Screen } from '../ui/common';
+import { BackButton, Card, Empty, Screen } from '../ui/common';
 import { Avatar } from '../ui/Avatar';
 import { StatGrid } from '../ui/StatGrid';
 import { ListRow } from '../ui/ListRow';
 import { EditDeleteRow } from '../ui/EditDeleteRow';
+import { DetailSkeleton } from '../ui/Skeleton';
 import { useConfirm } from '../ui/confirm-context';
 
 export function ClientDetail() {
@@ -46,7 +47,7 @@ export function ClientDetail() {
     return (
       <Screen>
         <BackButton />
-        <Loading />
+        <DetailSkeleton avatar />
       </Screen>
     );
   }

@@ -4,11 +4,12 @@ import { usePeriod } from '../lib/period-context';
 import { useDashboard, usePurchases } from '../hooks';
 import { compactStr, num } from '../lib/format';
 import { uz } from '../i18n/uz';
-import { Card, Empty, Loading, PageTitle, Screen, SearchInput } from '../ui/common';
+import { Card, Empty, PageTitle, Screen, SearchInput } from '../ui/common';
 import { PeriodSelector } from '../ui/PeriodSelector';
 import { Segmented } from '../ui/Segmented';
 import { Chart } from '../ui/Chart';
 import { ListRow, ShowMore } from '../ui/ListRow';
+import { SkelChart, SkelKpis, SkelRows } from '../ui/Skeleton';
 
 const chartSegItems = [
   { key: 'bar' as const, label: uz.segBar },
@@ -40,15 +41,19 @@ export function Purchases() {
       <PageTitle title={uz.purchasesTitle} addLabel={uz.saleBtn} onAdd={() => nav('/purchases/new')} />
       <PeriodSelector />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(104px,1fr))', gap: 10, marginBottom: 14 }}>
-        {kpis.map((k) => (
-          <Card key={k.label} style={{ borderRadius: 15, padding: 13 }}>
-            <div style={{ fontSize: 11.5, color: 'var(--muted)', fontWeight: 600 }}>{k.label}</div>
-            <div style={{ fontSize: 17, fontWeight: 800, marginTop: 7, fontVariantNumeric: 'tabular-nums' }}>{k.value}</div>
-            <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 2 }}>{k.unit}</div>
-          </Card>
-        ))}
-      </div>
+      {dash.data ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(104px,1fr))', gap: 10, marginBottom: 14 }}>
+          {kpis.map((k) => (
+            <Card key={k.label} style={{ borderRadius: 15, padding: 13 }}>
+              <div style={{ fontSize: 11.5, color: 'var(--muted)', fontWeight: 600 }}>{k.label}</div>
+              <div style={{ fontSize: 17, fontWeight: 800, marginTop: 7, fontVariantNumeric: 'tabular-nums' }}>{k.value}</div>
+              <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 2 }}>{k.unit}</div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <SkelKpis count={5} />
+      )}
 
       <Card style={{ padding: '16px 16px 14px', marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
@@ -57,14 +62,14 @@ export function Purchases() {
             <Segmented items={chartSegItems} value={chartType} onChange={setChartType} small />
           </div>
         </div>
-        {dash.data ? <Chart points={dash.data.timeseries} type={chartType} /> : <Loading />}
+        {dash.data ? <Chart points={dash.data.timeseries} type={chartType} /> : <SkelChart />}
       </Card>
 
       <SearchInput value={search} onChange={(v) => { setSearch(v); setLimit(8); }} placeholder={uz.searchByClient} />
 
       <Card style={{ padding: '2px 16px 8px' }}>
         {!list.data ? (
-          <Loading />
+          <SkelRows rows={6} />
         ) : list.data.items.length === 0 ? (
           <Empty>{uz.noSalesPeriod}</Empty>
         ) : (
